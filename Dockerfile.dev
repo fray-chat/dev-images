@@ -33,12 +33,13 @@ RUN curl -fsSLO https://nodejs.org/dist/v22.16.0/node-v22.16.0-linux-x64.tar.xz 
     corepack prepare pnpm@latest --activate && \
     node --version && npm --version && pnpm --version
 
-# Add linear-cli
-ENV SHELL=/bin/bash
-ENV PNPM_HOME=/root/.local/share/pnpm
-ENV PATH="$PNPM_HOME:$PATH"
-RUN pnpm setup && \
-    pnpm add -g @linear/cli
+# Deno (for linear-cli)
+RUN curl -fsSL https://deno.land/install.sh | sh
+ENV DENO_INSTALL="/root/.deno"
+ENV PATH="$DENO_INSTALL/bin:$PATH"
+
+# linear-cli (schpet/linear-cli)
+RUN deno install -A --reload -f -g -n linear jsr:@schpet/linear-cli
 
 # Rust (for building libsql-c native library)
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
