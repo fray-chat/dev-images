@@ -31,10 +31,8 @@ RUN curl -fsSLO https://nodejs.org/dist/v22.16.0/node-v22.16.0-linux-x64.tar.xz 
     npm install -g corepack && \
     corepack enable && \
     corepack prepare pnpm@latest --activate && \
-    node --version && npm --version && pnpm --version
-
-# Add linear cli
-pnpm add -g @linear/cli
+    node --version && npm --version && pnpm --version && \
+    pnpm add -g @linear/cli
 
 # Rust (for building libsql-c native library)
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
