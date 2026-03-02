@@ -34,7 +34,8 @@ RUN curl -fsSLO https://nodejs.org/dist/v22.16.0/node-v22.16.0-linux-x64.tar.xz 
     node --version && npm --version && pnpm --version
 
 # Add linear-cli
-RUN pnpm add -g @linear/cli
+RUN pnpm setup && \
+    pnpm add -g @linear/cli
 
 # Rust (for building libsql-c native library)
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
