@@ -3,6 +3,8 @@
 # Adds: GraalVM 25, Rust (for libsql-c), Node.js 22 + pnpm
 FROM warpdotdev/dev-java:21-agents
 
+LABEL org.opencontainers.image.source=https://github.com/fray-chat/dev-images
+
 # GraalVM 25 (replaces Java 21)
 RUN curl -fsSL https://download.oracle.com/graalvm/25/latest/graalvm-jdk-25_linux-x64_bin.tar.gz \
     | tar -xz -C /opt && \
