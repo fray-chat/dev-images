@@ -34,6 +34,7 @@ RUN curl -fsSLO https://nodejs.org/dist/v22.16.0/node-v22.16.0-linux-x64.tar.xz 
     node --version && npm --version && pnpm --version
 
 # Add linear-cli
+ENV SHELL=/bin/bash
 RUN pnpm setup && \
     pnpm add -g @linear/cli
 
