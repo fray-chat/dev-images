@@ -1,30 +1,50 @@
 # Oz cloud agent dev environment for fray-app
-# Base: Warp dev-java (includes agent CLIs)
-# Adds: GraalVM 25, Rust (for libsql-c), Node.js 22 + pnpm
-FROM warpdotdev/dev-java:21-agents
+# GraalVM 25, Rust, Node.js 22 + pnpm, coding agent CLIs
+FROM ubuntu:latest
 
 LABEL org.opencontainers.image.source=https://github.com/fray-chat/dev-images
 
-# GraalVM 25 (replaces Java 21)
+# Base deps
+RUN apt-get update && apt-get install -y \
+    curl ca-certificates build-essential git zlib1g-dev unzip wget \
+ && rm -rf /var/lib/apt/lists/*
+
+# GraalVM 25
 RUN curl -fsSL https://download.oracle.com/graalvm/25/latest/graalvm-jdk-25_linux-x64_bin.tar.gz \
     | tar -xz -C /opt && \
-    rm -rf /opt/java && \
     ln -sf /opt/graalvm-jdk-25* /opt/graalvm
 
 ENV JAVA_HOME=/opt/graalvm
 ENV GRAALVM_HOME=/opt/graalvm
 ENV PATH="$JAVA_HOME/bin:$PATH"
 
-# Native Image deps (gcc, zlib already in base; ensure musl/static libs)
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential zlib1g-dev && \
+# Python
+RUN apt-get update && apt-get install -y \
+      python3 python3-pip python3-venv && \
+    ln -sf /usr/bin/python3 /usr/bin/python && \
     rm -rf /var/lib/apt/lists/*
+
+# Node.js 22
+RUN curl -fsSLO https://nodejs.org/dist/v22.0.0/node-v22.0.0-linux-x64.tar.xz && \
+    tar -xJf node-v22.0.0-linux-x64.tar.xz -C /usr/local --strip-components=1 --no-same-owner && \
+    rm node-v22.0.0-linux-x64.tar.xz && \
+    npm install -g corepack && \
+    corepack enable && \
+    node --version && npm --version
 
 # Rust (for building libsql-c native library)
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 ENV PATH="/root/.cargo/bin:$PATH"
 
-# Node.js 22 (base already has pnpm; upgrade to Node 22)
-RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
-    apt-get install -y nodejs && \
+# Coding agent CLIs
+RUN npm install -g \
+      @anthropic-ai/claude-code \
+      @openai/codex \
+      @google/gemini-cli && \
+    curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
+      | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg 2>/dev/null && \
+    chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg && \
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" \
+      > /etc/apt/sources.list.d/github-cli.list && \
+    apt-get update && apt-get install -y --no-install-recommends gh && \
     rm -rf /var/lib/apt/lists/*
