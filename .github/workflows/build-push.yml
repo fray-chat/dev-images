@@ -30,4 +30,4 @@ jobs:
           context: .
           file: Dockerfile.dev
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:dev
