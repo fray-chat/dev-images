@@ -25,9 +25,9 @@ RUN apt-get update && apt-get install -y \
     rm -rf /var/lib/apt/lists/*
 
 # Node.js 22
-RUN curl -fsSLO https://nodejs.org/dist/v22.0.0/node-v22.0.0-linux-x64.tar.xz && \
-    tar -xJf node-v22.0.0-linux-x64.tar.xz -C /usr/local --strip-components=1 --no-same-owner && \
-    rm node-v22.0.0-linux-x64.tar.xz && \
+RUN curl -fsSLO https://nodejs.org/dist/v22.16.0/node-v22.16.0-linux-x64.tar.xz && \
+    tar -xJf node-v22.16.0-linux-x64.tar.xz -C /usr/local --strip-components=1 --no-same-owner && \
+    rm node-v22.16.0-linux-x64.tar.xz && \
     npm install -g corepack && \
     corepack enable && \
     corepack prepare pnpm@latest --activate && \
